@@ -1,15 +1,18 @@
-import { StyleSheet, Text, TextInput, View, Image } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image, Alert } from 'react-native';
 import React, { useState } from 'react';
 import Button from '@/components/Button';
 import { defaultPizzaImage } from '@/constants/Images';
 import * as ImagePicker from 'expo-image-picker';
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 
 const CreateProductScreen = () => {
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
   const [error, setError] = useState('')
   const [image, setImage] = useState<string | null>(null);
+  const { id } = useLocalSearchParams()
+
+  const isUpdating = !!id
 
   const resetFields = () => {
     setName('')
@@ -33,13 +36,47 @@ const CreateProductScreen = () => {
 
     return true
   }
-
-  const onCreate = () => {
+  
+  const onSubmit = () => {
     if(!validateInput()) {
       return
     }
+    if(isUpdating) {
+      onUpdate()
+    } else {
+      onCreate()
+    }
+  }
 
-    console.warn(`Name : ${name} , Price : ${price}`)
+  const onCreate = () => {
+    console.warn(`Creating -- Name : ${name} , Price : ${price}`)
+
+    resetFields()
+  }
+
+  const onUpdate = () => {
+    console.warn(`Updating -- Name : ${name} , Price : ${price}`)
+  }
+
+  const confirmDelete = () => {
+    Alert.alert(
+      'Confirm',
+      'Are you sure you want to delete?',
+      [
+        {
+          text: 'Cancel'
+        }, 
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: onDelete
+        }
+      ]
+    )
+  }
+
+  const onDelete = () => {
+    console.warn(`Delete`)
 
     resetFields()
   }
@@ -59,7 +96,7 @@ const CreateProductScreen = () => {
 
   return (
     <View className='flex-1 justify-center p-3'>
-      <Stack.Screen options={{ title: 'Create Product' }}/>
+      <Stack.Screen options={{ title: isUpdating ? 'Update product' : 'Create Product' }}/>
       <Image 
         className='w-2/4 aspect-square self-center'
         source = {{ uri: image || defaultPizzaImage }}
@@ -92,7 +129,8 @@ const CreateProductScreen = () => {
       </View>
       
       <Text className='text-red-500 font-semibold'>{error}</Text>
-      <Button text='Create' onPress={onCreate}/>
+    <Button text={isUpdating ? 'Update' : 'Create'} onPress={onSubmit}/>
+    {isUpdating && <Text onPress={confirmDelete} className='text-lg self-center font-semibold text-red-500'>Delete</Text>}
     </View>
   )
 }
