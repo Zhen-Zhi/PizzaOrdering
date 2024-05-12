@@ -4,7 +4,9 @@ import { FontAwesome } from "@expo/vector-icons"
 import Colors from "@/constants/Colors"
 
 export default function MenuStack() {
-    return (
-        <Stack />
-    )   
+  return (
+    <Stack>
+      <Stack.Screen name="list" options={{ headerShown: false }}/>
+    </Stack>
+  )   
 }
