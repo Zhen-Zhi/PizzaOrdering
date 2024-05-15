@@ -1,23 +1,27 @@
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Image, Pressable, ActivityIndicator } from 'react-native'
 import React from 'react'
 import { useState } from 'react'
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router'
 
-import products from '@asset/data/products'
 import Button from '@components/Button'
 import { useCart } from '@/provider/CartProvider'
 import { PizzaSize } from '@/types'
+import { useProduct } from '@/api/products'
+import { defaultPizzaImage } from '@/constants/Images'
+
+const sizes: PizzaSize[] = ['S', 'M', 'L', 'XL']
 
 const ProductListItemDetails = () => {
   const [selectedSize, setSelectedSize] = useState<PizzaSize>('M')
-  const { id } = useLocalSearchParams()
+  const { id: idString } = useLocalSearchParams()
+  const id = parseFloat(typeof idString == 'string' ? idString : idString?.[0] ?? '0')
+  
+  const { data: product, error, isLoading } = useProduct(id)
   const { addItem } = useCart()
   const router = useRouter()
 
-  
-  const product = products.find((product) => product.id.toString() == id)
-  const sizes: PizzaSize[] = ['S', 'M', 'L', 'XL']
-  
+  //////////////////          function           /////////////////////
+
   const addToCart = () => {
     if (!product) {
       return
@@ -27,11 +31,19 @@ const ProductListItemDetails = () => {
     router.push('/cart')
   }
 
-  if (!product) {
+  //////////////////           condition return         ///////////////////
+
+  if (error) {
     return (
-      <Text>Error. Product not found</Text>
+      <Text>Error. {error.message}</Text>
     )
   }
+
+  if (isLoading) {
+    return <ActivityIndicator />
+  }
+
+  /////////////////          main return            ////////////////////
 
   return (
     <View className='p-3 bg-white flex-1'>
@@ -39,7 +51,7 @@ const ProductListItemDetails = () => {
       <Image 
         className='w-full'
         style={styles.image}
-        source={{ uri: product.image }}
+        source={{ uri: product.image || defaultPizzaImage }}
       />
 
       <Text>Select size</Text>
