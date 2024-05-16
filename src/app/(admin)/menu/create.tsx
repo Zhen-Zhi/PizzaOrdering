@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import Button from '@/components/Button';
 import { defaultPizzaImage } from '@/constants/Images';
 import * as ImagePicker from 'expo-image-picker';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { useInsertProduct } from '@/api/products';
 
 const CreateProductScreen = () => {
   const [name, setName] = useState('')
@@ -11,6 +12,7 @@ const CreateProductScreen = () => {
   const [error, setError] = useState('')
   const [image, setImage] = useState<string | null>(null);
   const { id } = useLocalSearchParams()
+  const { mutate: insertProduct } = useInsertProduct()
 
   const isUpdating = !!id
 
@@ -51,7 +53,15 @@ const CreateProductScreen = () => {
   const onCreate = () => {
     console.warn(`Creating -- Name : ${name} , Price : ${price}`)
 
-    resetFields()
+    insertProduct(
+      { name, price: parseFloat(price), image},
+      {
+        onSuccess: () => {
+          resetFields()
+          router.back()
+        }
+      },
+    )
   }
 
   const onUpdate = () => {
@@ -109,19 +119,19 @@ const CreateProductScreen = () => {
       </Text>
 
       <View className='my-3'>
-        <Text>Name: </Text>
+        <Text className='mb-1'>Name: </Text>
         <TextInput 
           value={name}
-          className='bg-white'
+          className='bg-white p-2 rounded-xl'
           placeholder='This is placeholder'
           onChangeText={setName}
         />
       </View>
       <View className='my-3'>
-        <Text>Price: </Text>
+        <Text className='mb-1'>Price: </Text>
         <TextInput 
           value={price}
-          className='bg-white'
+          className='bg-white p-2 rounded-xl'
           placeholder='This is placeholder'
           keyboardType='numeric'
           onChangeText={setPrice}
