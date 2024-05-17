@@ -1,18 +1,32 @@
 import { StyleSheet, Text, TextInput, View, Image, Alert } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@/components/Button';
 import { defaultPizzaImage } from '@/constants/Images';
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { useInsertProduct } from '@/api/products';
+import { useDelete, useInsertProduct, useProduct, useUpdateProduct } from '@/api/products';
 
 const CreateProductScreen = () => {
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
   const [error, setError] = useState('')
   const [image, setImage] = useState<string | null>(null);
-  const { id } = useLocalSearchParams()
+  const { id: idString } = useLocalSearchParams()
+  const id = parseFloat(typeof idString == 'string' ? idString : idString?.[0] ?? '0')
+
+  const { data: updatingProduct } = useProduct(id)
+
+  useEffect(() => {
+    if (updatingProduct) {
+      setName(updatingProduct.name)
+      setImage(updatingProduct.image)
+      setPrice(updatingProduct.price.toString())
+    }
+  }, [updatingProduct])
+
   const { mutate: insertProduct } = useInsertProduct()
+  const { mutate: updateProduct } = useUpdateProduct()
+  const { mutate: deleteProduct } = useDelete()
 
   const isUpdating = !!id
 
@@ -66,6 +80,13 @@ const CreateProductScreen = () => {
 
   const onUpdate = () => {
     console.warn(`Updating -- Name : ${name} , Price : ${price}`)
+
+    updateProduct({id, name, price, image}, {
+      onSuccess() {
+        router.back()
+        resetFields()
+      }
+    })
   }
 
   const confirmDelete = () => {
@@ -86,9 +107,13 @@ const CreateProductScreen = () => {
   }
 
   const onDelete = () => {
-    console.warn(`Delete`)
-
-    resetFields()
+    deleteProduct(id,{
+      onSuccess() {
+        router.replace('/(admin)')
+        resetFields()
+      }
+    })
+    console.warn(`Deleting`)
   }
 
   const pickImage = async () => {

@@ -1,4 +1,4 @@
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query"
+import { useQueryClient, useMutation, useQuery, QueryClient } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 
 export const useProductList = () => {
@@ -48,12 +48,65 @@ export const useInsertProduct = () => {
             image: data.image,
             price: data.price,
           })
-
+          .single()
         if (error) {
           throw new Error(error.message)
         }
 
         return newProduct
+      },
+      async onSuccess() {
+        await queryClient.invalidateQueries(['products'])
+      }
+    })
+  )
+}
+
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient()
+
+  return (
+    useMutation({
+      mutationFn: async (data: any) => {
+        const { data: updatedProduct, error } = await supabase
+          .from('products')
+          .update({
+            name: data.name,
+            image: data.image,
+            price: data.price,
+          })
+          .eq('id', data.id)
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        return updatedProduct
+      },
+      async onSuccess(_, { id }) {
+        await queryClient.invalidateQueries(['product', id])
+        await queryClient.invalidateQueries(['products'])
+      }
+    })
+  )
+}
+
+export const useDelete = () => {
+  const queryClient = useQueryClient()
+
+  return (
+    useMutation({
+      mutationFn: async (id: number) => {
+        const { data, error } = await supabase
+          .from('products')
+          .delete()
+          .eq('id', id)
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        return data
       },
       async onSuccess() {
         await queryClient.invalidateQueries(['products'])
