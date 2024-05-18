@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 
-import { OrderItem } from '@/types'
+import { OrderItem, Tables } from '@/types'
 import { defaultPizzaImage } from '@/constants/Images'
 
 type OrderItemListItemProps = {
-  orderDetails: OrderItem
+  orderDetails: Tables<'order_items'>
 }
 
 const OrderItemListItem = ({ orderDetails }:OrderItemListItemProps) => {
@@ -16,7 +16,7 @@ const OrderItemListItem = ({ orderDetails }:OrderItemListItemProps) => {
       <View>
         <Image
           className='w-20 aspect-square'
-          source={{ uri: orderDetails.products.image || defaultPizzaImage}}
+          source={{ uri: orderDetails?.products.image || defaultPizzaImage}}
           resizeMode='contain'
         />
       </View>

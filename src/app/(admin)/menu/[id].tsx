@@ -52,7 +52,7 @@ const ProductListItemDetails = () => {
   return (
     <View className='p-3 bg-white flex-1'>
       <Stack.Screen options={{
-            title: product.name,
+            title: product?.name ?? "not found",
             headerRight: () => (
               <Link href={`/(admin)/menu/create?id=${id}`} asChild>
                 <Pressable>
@@ -71,10 +71,10 @@ const ProductListItemDetails = () => {
       <Image 
         className='w-full'
         style={styles.image}
-        source={{ uri: product.image || defaultPizzaImage}}
+        source={{ uri: product?.image ?? defaultPizzaImage}}
       />
-      <Text className='text-xl font-normal'>{product.name}</Text>
-      <Text className='text-lg font-bold text-sky-600'>${product.price}</Text>
+      <Text className='text-xl font-normal'>{product?.name}</Text>
+      <Text className='text-lg font-bold text-sky-600'>${product?.price}</Text>
     </View>
   )
 }

@@ -2,6 +2,7 @@ import { View, Text } from 'react-native'
 import React, { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Session } from '@supabase/supabase-js'
+import { Tables } from '@/database.types'
 
 type AuthData = {
   session: Session | null;
@@ -19,7 +20,7 @@ const AuthContext = createContext<AuthData>({
 
 export default function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null)
-  const [profile, setProfile] = useState(null)
+  const [profile, setProfile] = useState<Tables<'profiles'> | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
           .eq('id', session.user.id)
           .single();
 
-        setProfile(data || null);
+        setProfile(data);
       }
 
       setLoading(false)
@@ -48,7 +49,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ session, loading, profile, isAdmin: profile?.group == 'ADMIN' }}>
+    <AuthContext.Provider value={{ session, loading, profile, isAdmin: profile?.group == 'ADMIN' ?? false}}>
       {children}
     </AuthContext.Provider>
   )

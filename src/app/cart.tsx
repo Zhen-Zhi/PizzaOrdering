@@ -18,7 +18,7 @@ const CartScreen = () => {
       />
 
       <View className='mt-auto'>
-        <Text className='text-lg font-medium'>Total: ${total}</Text>
+        <Text className='text-lg font-medium'>Total: ${total.toFixed(2)}</Text>
         <Button text='checkout' />
       </View>
 
