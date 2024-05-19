@@ -5,14 +5,18 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 import OrderListItem from '@/components/OrderListItem';
 import OrderItemListItem from '@/components/OrderItemListItem';
 import { OrderStatusList } from '@/types';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { useOrderDetails } from '@/api/orders';
+import { useOrderDetails, useUpdateOrder } from '@/api/orders';
 ;
 const OrderListItemDetailsScreen = () => {
   const { id: idString } = useLocalSearchParams();
   const id = parseFloat(typeof idString == 'string' ? idString : idString?.[0] ?? '0')
 
   const { data: order, isLoading, error } = useOrderDetails(id)
+  const { mutate: updateOrder } = useUpdateOrder()
+
+  const updateStatus = (status: string) => {
+    updateOrder({ id: id, updatedFields: { status },})
+  }
 
   if (isLoading) return <ActivityIndicator />
   if (error) return <Text>Error: {error.message}</Text>
@@ -23,8 +27,8 @@ const OrderListItemDetailsScreen = () => {
       <Stack.Screen options={{ title: `Order #${id}` }} />
       <OrderListItem order={order} />
 
-      {/* <FlatList 
-        data={order}
+      <FlatList 
+        data={order.order_items}
         renderItem={({ item }) => <OrderItemListItem orderDetails={item} />}
         contentContainerStyle = {{ gap: 10, padding: 10 }}
         ListFooterComponent={
@@ -35,7 +39,7 @@ const OrderListItemDetailsScreen = () => {
                 <Pressable
                   className={`border-sky-700 ${order.status == status ? 'bg-sky-700' : 'bg-transparent'}`}
                   key={status}
-                  onPress={() => console.warn('Update status')}
+                  onPress={() => updateStatus(status)}
                   style={{
                     borderWidth: 1,
                     padding: 10,
@@ -57,7 +61,7 @@ const OrderListItemDetailsScreen = () => {
             </View>
           </>
         }
-      /> */}
+      />
     </View>
   )
 }

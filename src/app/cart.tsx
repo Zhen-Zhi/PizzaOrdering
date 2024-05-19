@@ -7,7 +7,7 @@ import CartListItem from '@/components/CartListItem'
 import Button from '@/components/Button'
 
 const CartScreen = () => {
-  const { items, total } = useCart()
+  const { items, total, checkout } = useCart()
 
   return (
     <View className='p-3 flex-1'>
@@ -19,7 +19,7 @@ const CartScreen = () => {
 
       <View className='mt-auto'>
         <Text className='text-lg font-medium'>Total: ${total.toFixed(2)}</Text>
-        <Button text='checkout' />
+        <Button text='checkout' onPress={checkout}/>
       </View>
 
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
