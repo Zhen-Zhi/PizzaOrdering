@@ -1,12 +1,13 @@
 import { View, Text, ActivityIndicator } from 'react-native';
 import React from 'react';
 import Button from '../components/Button';
-import { Link, Redirect } from 'expo-router';
+import { Link, Redirect, router, useRouter } from 'expo-router';
 import { useAuth } from '@/provider/AuthProvider';
 import { supabase } from '@/lib/supabase';
 
 const index = () => {
   const { session, loading, profile, isAdmin } = useAuth()
+  const router = useRouter()
 
   if(loading) {
     return <ActivityIndicator />
@@ -25,9 +26,11 @@ const index = () => {
       <Link href={'/(user)'} asChild>
         <Button text="User" />
       </Link>
-      <Link href={'/(admin)'} asChild>
-        <Button text="Admin" />
-      </Link>
+      {/* <Link href={'/(admin)'} asChild> */}
+        <Button text="Admin" onPress={() => {
+          router.push('/(admin)')
+        }} />
+      {/* </Link> */}
       <Button text="Sign out" onPress={() => supabase.auth.signOut()}/>
     </View>
   );

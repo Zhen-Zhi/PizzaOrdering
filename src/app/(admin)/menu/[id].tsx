@@ -11,6 +11,7 @@ import { FontAwesome } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
 import { useProduct } from '@/api/products'
 import { defaultPizzaImage } from '@/constants/Images'
+import RemoteImage from '@/components/RemoteImage'
 
 const sizes: PizzaSize[] = ['S', 'M', 'L', 'XL']
 
@@ -68,10 +69,11 @@ const ProductListItemDetails = () => {
               </Link>
             ),
           }} />
-      <Image 
+      <RemoteImage 
         className='w-full'
         style={styles.image}
-        source={{ uri: product?.image ?? defaultPizzaImage}}
+        path={product?.image}
+        fallback={defaultPizzaImage}
       />
       <Text className='text-xl font-normal'>{product?.name}</Text>
       <Text className='text-lg font-bold text-sky-600'>${product?.price}</Text>

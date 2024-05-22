@@ -3,9 +3,10 @@ import React from 'react'
 
 import { OrderItem, Tables } from '@/types'
 import { defaultPizzaImage } from '@/constants/Images'
+import RemoteImage from './RemoteImage'
 
 type OrderItemListItemProps = {
-  orderDetails: Tables<'order_items'>
+  orderDetails: { products: Tables<'products'> } & Tables<'order_items'>
 }
 
 const OrderItemListItem = ({ orderDetails }:OrderItemListItemProps) => {
@@ -14,9 +15,10 @@ const OrderItemListItem = ({ orderDetails }:OrderItemListItemProps) => {
   return (
     <View className='bg-white flex flex-row p-2'>
       <View>
-        <Image
+        <RemoteImage
           className='w-20 aspect-square'
-          source={{ uri: orderDetails?.products.image || defaultPizzaImage}}
+          path={orderDetails.products.image}
+          fallback={defaultPizzaImage}
           resizeMode='contain'
         />
       </View>

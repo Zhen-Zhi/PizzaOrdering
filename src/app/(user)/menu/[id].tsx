@@ -8,6 +8,7 @@ import { useCart } from '@/provider/CartProvider'
 import { PizzaSize } from '@/types'
 import { useProduct } from '@/api/products'
 import { defaultPizzaImage } from '@/constants/Images'
+import RemoteImage from '@/components/RemoteImage'
 
 const sizes: PizzaSize[] = ['S', 'M', 'L', 'XL']
 
@@ -47,11 +48,12 @@ const ProductListItemDetails = () => {
 
   return (
     <View className='p-3 bg-white flex-1'>
-      <Stack.Screen options={{ title: product.name}} />
-      <Image 
+      <Stack.Screen options={{ title: product?.name ?? 'Product not found'}} />
+      <RemoteImage 
         className='w-full'
         style={styles.image}
-        source={{ uri: product.image || defaultPizzaImage }}
+        path={product?.image}
+        fallback={defaultPizzaImage}
       />
 
       <Text>Select size</Text>
@@ -70,7 +72,7 @@ const ProductListItemDetails = () => {
           </Pressable>
         ))}
       </View>
-      <Text className='text-lg font-bold text-sky-400 mt-auto'>${product.price}</Text>
+      <Text className='text-lg font-bold text-sky-400 mt-auto'>${product?.price ?? 0}</Text>
       <Button onPress={addToCart} text='Add to cart'/>
     </View>
   )
