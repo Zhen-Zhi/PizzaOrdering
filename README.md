@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-FoodieGo is a mobile food ordering application for learning full stack mobile development purpose in React Native.
+PizzaOrdering is a mobile food ordering application for learning full stack mobile development purpose in React Native.
 
 ## Key Features
 
